@@ -10,8 +10,11 @@ import sessionsRouter from "./routes/sessions.router.js";
 import viewsRouter from "./routes/views.router.js";
 import passport from "passport";
 import {initializePassport} from "./config/passport.config.js";
+import dotenv from "dotenv";
 
 const app = express();
+
+dotenv.config();
 
 //const fileStorage = FileStore(session);
 
