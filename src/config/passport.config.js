@@ -1,29 +1,31 @@
 import passport from "passport";
-import local from "passport-local";
-//import jwt from "passport-jwt";
+import { Strategy as LocalStrategy } from "passport-local";
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import { userModel } from "../models/user.model.js";
 import { createHash, isValidPassword } from "../utils.js";
 //import { Strategy as GithubStrategy } from "passport-github2";
 
 export function initializePassport() {
-  //register
+  //Registro
   passport.use(
     "register",
-    new local(
+    new LocalStrategy(
       {
         passReqToCallback: true,
         usernameField: "email",
         passwordField: "password",
-        session: true,
+        session: false,
       },
       async (req, username, password, done) => {
         try {
-          password = createHash(password);
-          const newUser = await userModel.create({ ...req.body, password });
+          const hashedPassword = createHash(password);
+          const newUser = await userModel.create({
+            ...req.body,
+            password: hashedPassword,
+          });
           done(null, newUser);
         } catch (error) {
-          console.log(error.message);
+          return done(error);
         }
       }
     )
@@ -32,24 +34,26 @@ export function initializePassport() {
   //Login
   passport.use(
     "login",
-    new local(
+    new LocalStrategy(
       {
         usernameField: "email",
         passwordField: "password",
-        session: true,
+        session: false,
       },
       async (username, password, done) => {
         try {
           const user = await userModel.findOne({ email: username });
           if (user) {
             if (isValidPassword(password, user.password)) {
-              done(null, user);
+              return done(null, user);
             } else {
-              done(null, false);
+              return done(null, false);
             }
+          } else {
+            return done(null, false);
           }
         } catch (error) {
-          console.log(error.message);
+          return done(error);
         }
       }
     )
@@ -91,22 +95,27 @@ export function initializePassport() {
         secretOrKey: "jwtdefuwafuwa",
       },
       async (payload, done) => {
-        console.log(payload);
-        return done(null, payload);
+        try {
+          return done(null, payload);
+        } catch (error) {
+          return done(error);
+        }
       }
     )
   );
-  function cookieExtractor(req) {
-    if (req && req.cookies) {
-      return req.cookies.jwt;
-    }
-  }
 
-  passport.serializeUser((user, done) => {
+  //Funciones para usar con Sesiones
+  /* passport.serializeUser((user, done) => {
     done(null, user._id);
   });
   passport.deserializeUser(async (id, done) => {
     let user = await userService.findById(id);
     done(null, user);
-  });
+  }); */
+}
+
+function cookieExtractor(req) {
+  if (req && req.cookies) {
+    return req.cookies.jwt;
+  }
 }

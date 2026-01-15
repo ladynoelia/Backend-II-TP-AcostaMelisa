@@ -25,15 +25,16 @@ app.use(express.urlencoded({ extended: true }));
 
 //Cookie-parser
 app.use(cookieParser());
-//File storage
+
+//File storage en MongoDB
 app.use(
   session({
     //store: new fileStorage({path:"./sessions", ttl:100, retries: 0}),
-    store: new MongoStore({
+    store: MongoStore.create({
       autoRemove: "interval",
       autoRemoveInterval: 5,
       mongoUrl: process.env.MONGODB,
-      //mongoOptions:{useNewUrlParser: true, useUnifiedTopology: true },
+      //mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
       ttl: 15,
     }),
     secret: "secretodecookieuwu",
@@ -45,6 +46,11 @@ app.use(
   })
 );
 
+//Passport
+initializePassport();
+app.use(passport.initialize());
+//app.use(passport.session());
+
 //Router
 app.use("/api/users", usersRouter);
 app.use("/api/sessions", sessionsRouter);
@@ -55,14 +61,7 @@ app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
 
-//Passport
-initializePassport();
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.listen(3030, () => {
+app.listen(8080, () => {
   console.log("Servidor iniciado!");
   connectMongoDB().then(() => console.log("Base de datos conectada xD"));
 });
-
-//nodemon ./src/app.js

@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
   //cart: id con referencia a Carts
   role: {
     type: String,
+    default: "user",
   },
 });
 

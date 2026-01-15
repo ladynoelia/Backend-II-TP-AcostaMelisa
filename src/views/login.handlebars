@@ -1,7 +1,16 @@
-<form action="/api/sessions/login" method="post">
-    <label for="email">Email</label>
-    <input type="text" name="email" id="">
-    <label for="password">Contraseña</label>
-    <input type="text" name="password" id="">
-    <input type="submit" value="Registrarse">
-</form>
+<div>
+  <h3>Inicio de sesión</h3>
+  <form action="/api/sessions/login" method="post">
+    <label for="email">Email
+      <input type="text" name="email" id="" /><br />
+    </label>
+
+    <label for="password">Contraseña
+      <input type="text" name="password" id="" /><br />
+    </label>
+
+    <input type="submit" value="Login" />
+
+    {{! <a href="/api/sessions/github">Ingresar con Github</a> }}
+  </form>
+</div>
