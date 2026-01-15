@@ -5,11 +5,11 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 //import FileStore from "session-file-store";
 import MongoStore from "connect-mongo";
-import {engine} from "express-handlebars";
+import { engine } from "express-handlebars";
 import sessionsRouter from "./routes/sessions.router.js";
 import viewsRouter from "./routes/views.router.js";
 import passport from "passport";
-import {initializePassport} from "./config/passport.config.js";
+import { initializePassport } from "./config/passport.config.js";
 import dotenv from "dotenv";
 
 const app = express();
@@ -26,22 +26,24 @@ app.use(express.urlencoded({ extended: true }));
 //Cookie-parser
 app.use(cookieParser());
 //File storage
-app.use(session({
-  //store: new fileStorage({path:"./sessions", ttl:100, retries: 0}),
-  store: new MongoStore({
-    autoRemove:"interval",
-    autoRemoveInterval: 5,
-    mongoUrl: "mongodb+srv://kabigon:coderProyect04@fuwafuwa-cluster.mqb615u.mongodb.net/fuwaEcommerce?appName=fuwafuwa-cluster",
-    //mongoOptions:{useNewUrlParser: true, useUnifiedTopology: true },
-    ttl: 15
-  }),
-  secret: "secretodecookieuwu",
-  resave: false,
-  saveUninitialized: false,
-  cookie:{
-    maxAge: 1000*60
-  }
-}))
+app.use(
+  session({
+    //store: new fileStorage({path:"./sessions", ttl:100, retries: 0}),
+    store: new MongoStore({
+      autoRemove: "interval",
+      autoRemoveInterval: 5,
+      mongoUrl: process.env.MONGODB,
+      //mongoOptions:{useNewUrlParser: true, useUnifiedTopology: true },
+      ttl: 15,
+    }),
+    secret: "secretodecookieuwu",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60,
+    },
+  })
+);
 
 //Router
 app.use("/api/users", usersRouter);

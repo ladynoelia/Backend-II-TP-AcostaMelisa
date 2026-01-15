@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { userModel } from "../models/user.model.js";
-import {createHash, isValidPassword} from "../utils.js";
+//import { userModel } from "../models/user.model.js";
+//import { createHash, isValidPassword } from "../utils.js";
 import passport from "passport";
 
 const sessionsRouter = Router();
@@ -18,20 +18,24 @@ const sessionsRouter = Router();
       });
     }
 }); */
-sessionsRouter.post("/register", passport.authenticate("register", {failureRedirect: "/failure-register"}), async (req, res, next) => {
-  try {
-    res.status(200).json({ message: "success" });
-  } catch (error) {
-    res.status(400).send({
-      status: "error",
-      message: error.message,
-    });
+sessionsRouter.post(
+  "/register",
+  passport.authenticate("register", { failureRedirect: "/failure-register" }),
+  async (req, res, next) => {
+    try {
+      res.status(200).json({ message: "success" });
+    } catch (error) {
+      res.status(400).send({
+        status: "error",
+        message: error.message,
+      });
+    }
   }
-});
+);
 // Registro fallido
 sessionsRouter.get("/failure-register", async (req, res, next) => {
-  res.status(400).json({message: "Falló el resgistro"});
-})
+  res.status(400).json({ message: "Falló el resgistro" });
+});
 
 //Loguear un usuario
 /* sessionsRouter.post("/login", async (req, res, next) => {
@@ -52,9 +56,12 @@ sessionsRouter.get("/failure-register", async (req, res, next) => {
       });   
     }
 }); */
-sessionsRouter.post("/login", passport.authenticate("login", {failureRedirect: "/failure-login"}), async (req, res, next) => {
-  res.status(200).json({message: "Logueado éxitosamente"})
-}); 
-
+sessionsRouter.post(
+  "/login",
+  passport.authenticate("login", { failureRedirect: "/failure-login" }),
+  async (req, res, next) => {
+    res.status(200).json({ message: "Logueado éxitosamente" });
+  }
+);
 
 export default sessionsRouter;

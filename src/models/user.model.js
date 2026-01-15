@@ -9,10 +9,14 @@ const userSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
-  password:{
+  password: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
+  //cart: id con referencia a Carts
+  role: {
+    type: String,
+  },
 });
 
 export const userModel = mongoose.model("user", userSchema);
