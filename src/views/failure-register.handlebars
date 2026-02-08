@@ -1,0 +1,25 @@
+<div class="main">
+  <h3>Alta de nuevo usuario</h3>
+  <form action="/api/sessions/register" method="post">
+    <label id="first_name">Nombre
+      <input class="form-control" type="text" name="first_name" id="" /><br />
+    </label>
+    <label id="last_name">Apellido
+      <input class="form-control" type="text" name="last_name" id="" /><br />
+    </label>
+    <label id="age">Edad
+      <input class="form-control" type="number" name="age" id="" /><br />
+    </label>
+    <label id="email">Email
+      <input class="form-control" type="text" name="email" id="" /><br />
+    </label>
+    <label id="password">Contraseña
+      <input class="form-control" type="password" name="password" id="" /><br />
+    </label>
+
+    <input class="form-control" type="submit" value="Registrarse" />
+
+    <h3>{{message}}</h3>
+
+  </form>
+</div>

@@ -2,8 +2,9 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import { userModel } from "../models/user.model.js";
-import { createHash, isValidPassword } from "../utils.js";
-//import { Strategy as GithubStrategy } from "passport-github2";
+import { isValidPassword } from "../utils.js";
+import { env } from "./environment.js";
+import { createUser, getUserByEmail } from "../services/user.services.js";
 
 export function initializePassport() {
   //Registro
@@ -17,18 +18,22 @@ export function initializePassport() {
         session: false,
       },
       async (req, username, password, done) => {
+        const { email, ...userData } = req.body;
         try {
-          const hashedPassword = createHash(password);
-          const newUser = await userModel.create({
-            ...req.body,
-            password: hashedPassword,
-          });
-          done(null, newUser);
+          const user = await getUserByEmail(email);
+          if (user) {
+            console.log("Ya existe el usuario");
+            return done(null, false);
+          }
+          const newUser = { email, ...userData };
+          const result = await createUser(newUser);
+
+          done(null, result);
         } catch (error) {
           return done(error);
         }
-      }
-    )
+      },
+    ),
   );
 
   //Login
@@ -55,35 +60,9 @@ export function initializePassport() {
         } catch (error) {
           return done(error);
         }
-      }
-    )
-  );
-
-  //Oauth con Github
-  /* passport.use(
-    "github",
-    new GithubStrategy(
-      {
-        clientID: "",
-        clientSecret: "",
-        callbackURL: "http://localhost:3030/api/sessions/login",
       },
-      async (accessToken, refreshToken, profile, done) => {
-        try {
-          const { username } = profile;
-          const user = await userModel.findOne({ username });
-          if (!user) {
-            const newUser = await userModel.create({ username });
-            done(null, newUser.toJSON());
-          } else {
-            done(null, user.toJSON());
-          }
-        } catch (error) {
-          console.log(error.message);
-        }
-      }
-    )
-  ); */
+    ),
+  );
 
   //JWT
   passport.use(
@@ -92,7 +71,7 @@ export function initializePassport() {
       {
         jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
         //misma clave que en utils.js
-        secretOrKey: "jwtdefuwafuwa",
+        secretOrKey: env.JWT_KEY,
       },
       async (payload, done) => {
         try {
@@ -100,8 +79,8 @@ export function initializePassport() {
         } catch (error) {
           return done(error);
         }
-      }
-    )
+      },
+    ),
   );
 
   //Funciones para usar con Sesiones

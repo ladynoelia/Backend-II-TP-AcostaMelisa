@@ -1,37 +1,48 @@
 import { Router } from "express";
-import { generateToken } from "../utils.js";
 import passport from "passport";
+import {
+  currentUser,
+  forgotPassword,
+  loginUser,
+  registerUser,
+  resetPassword,
+} from "../controllers/sessions.controller.js";
 
 const sessionsRouter = Router();
-
-// Link del formulario
-//sessionsRouter.get("/github", passport.authenticate("github"));
 
 //Loguear un usuario
 sessionsRouter.post(
   "/login",
-  passport.authenticate("login", { session: false, failureRedirect: "/login" }),
-  //passport.authenticate("github", { session: false }),
-  async (req, res, next) => {
-    const token = generateToken(req.user);
-    res.cookie("jwt", token, { httpOnly: true }).redirect("/profile");
-  }
+  passport.authenticate("login", {
+    session: false,
+    failureRedirect: "/login-failure",
+  }),
+  loginUser,
 );
 
-//Registrar un usuario
+//Registra un usuario
 sessionsRouter.post(
   "/register",
-  passport.authenticate("register", { failureRedirect: "/failure-register" }),
-  async (req, res, next) => {
-    try {
-      res.status(200).json({ message: "success" });
-    } catch (error) {
-      res.status(400).send({
-        status: "error",
-        message: error.message,
-      });
-    }
-  }
+  passport.authenticate("register", {
+    session: false,
+    failureRedirect: "/failure-register",
+  }),
+  registerUser,
 );
+
+//Muestra el usuario activo
+sessionsRouter.get(
+  "/current",
+  passport.authenticate("jwt", {
+    session: false,
+  }),
+  currentUser,
+);
+
+//Solicita cambiar la contraseña
+sessionsRouter.post("/forgot-password", forgotPassword);
+
+//Resetea la contraseña
+sessionsRouter.post("/reset-password", resetPassword);
 
 export default sessionsRouter;

@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { env } from "./config/environment.js";
 
 //Funciones de Bcrypt
 export function createHash(password) {
@@ -20,9 +21,9 @@ export const generateToken = (user) => {
     email: user.email,
     role: user.role,
   };
-  return jwt.sign(payload, "jwtdefuwafuwa", { expiresIn: "1h" });
+  return jwt.sign(payload, env.JWT_KEY, { expiresIn: "1h" });
 };
 
 export function verifyToken(token) {
-  return jwt.verify(token, "jwtdefuwafuwa");
+  return jwt.verify(token, env.JWT_KEY);
 }

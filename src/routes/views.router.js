@@ -1,34 +1,47 @@
 import { Router } from "express";
 import passport from "passport";
+import {
+  renderAdmin,
+  renderFailureRegister,
+  renderForgotPassword,
+  renderHome,
+  renderLogin,
+  renderLoginFailure,
+  renderProfile,
+  renderRegister,
+  renderResetPassword,
+} from "../controllers/views.controller.js";
+import { authorizeRoles } from "../middlewares/authorization.middleware.js";
 
 const viewsRouter = Router();
 
-viewsRouter.get("/login", async (req, res, next) => {
-  try {
-    res.render("login.handlebars");
-  } catch (error) {
-    console.log(error);
-  }
-});
+//Home
+viewsRouter.get("/", renderHome);
 
-viewsRouter.use(passport.authenticate("jwt", { session: false }));
+//Vista protegida
+viewsRouter.get(
+  "/admin",
+  passport.authenticate("jwt", { session: false }),
+  authorizeRoles("admin"),
+  renderAdmin,
+);
 
-viewsRouter.get("/profile", async (req, res, next) => {
-  if (!req.user) {
-    res.redirect("/login");
-  }
-  const { first_name, last_name, age, email, role } = req.user;
-  try {
-    res.render("profile.handlebars", {
-      first_name,
-      last_name,
-      age,
-      email,
-      role,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-});
+viewsRouter.get("/login", renderLogin);
+
+viewsRouter.get("/login-failure", renderLoginFailure);
+
+viewsRouter.get("/register", renderRegister);
+
+viewsRouter.get("/failure-register", renderFailureRegister);
+
+viewsRouter.get(
+  "/profile",
+  passport.authenticate("jwt", { session: false }),
+  renderProfile,
+);
+
+viewsRouter.get("/reset-password", renderResetPassword);
+
+viewsRouter.get("/forgot-password", renderForgotPassword);
 
 export default viewsRouter;

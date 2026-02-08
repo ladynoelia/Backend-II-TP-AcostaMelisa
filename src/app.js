@@ -1,39 +1,39 @@
 import express from "express";
-import usersRouter from "./routes/users.router.js";
-import connectMongoDB from "./db/mongo.connection.js";
+import { env } from "./config/environment.js";
 import cookieParser from "cookie-parser";
-import session from "express-session";
+//import session from "express-session";
 //import FileStore from "session-file-store";
-import MongoStore from "connect-mongo";
+//import MongoStore from "connect-mongo";
 import { engine } from "express-handlebars";
+
+import usersRouter from "./routes/users.router.js";
 import sessionsRouter from "./routes/sessions.router.js";
 import viewsRouter from "./routes/views.router.js";
+
 import passport from "passport";
 import { initializePassport } from "./config/passport.config.js";
-import dotenv from "dotenv";
+
+import MongoSingleton from "./config/mongo.js";
 
 const app = express();
-
-dotenv.config();
 
 //const fileStorage = FileStore(session);
 
 //Middlewares
 app.use(express.json());
-//app.use(express.static("public"));
+app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
 //Cookie-parser
 app.use(cookieParser());
 
 //File storage en MongoDB
-app.use(
-  session({
-    //store: new fileStorage({path:"./sessions", ttl:100, retries: 0}),
+/* app.use(
+  session({    
     store: MongoStore.create({
       autoRemove: "interval",
       autoRemoveInterval: 5,
-      mongoUrl: process.env.MONGODB,
+      mongoUrl: env.MONGODB,
       //mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
       ttl: 15,
     }),
@@ -43,8 +43,8 @@ app.use(
     cookie: {
       maxAge: 1000 * 60,
     },
-  })
-);
+  }),
+); */
 
 //Passport
 initializePassport();
@@ -61,7 +61,7 @@ app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", "./src/views");
 
-app.listen(8080, () => {
+app.listen(env.PORT, () => {
   console.log("Servidor iniciado!");
-  connectMongoDB().then(() => console.log("Base de datos conectada xD"));
+  MongoSingleton.getInstance();
 });

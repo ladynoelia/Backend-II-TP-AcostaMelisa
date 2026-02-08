@@ -1,0 +1,16 @@
+<div class="main">
+  <h3>Inicio de sesión</h3>
+  <form action="/api/sessions/login" method="post">
+    <label id="email">Email
+      <input class="form-control" type="text" name="email" id="" /><br />
+    </label>
+
+    <label id="password">Contraseña
+      <input class="form-control" type="password" name="password" id="" /><br />
+    </label>
+
+    <input class="form-control" type="submit" value="Login" />
+  </form>
+  <hr />
+  <h3>{{message}}</h3>
+</div>
